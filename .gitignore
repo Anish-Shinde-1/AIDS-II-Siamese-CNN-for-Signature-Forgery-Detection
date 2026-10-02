@@ -1,0 +1,59 @@
+# =============================================================================
+# Git Ignore Configuration: Offline Handwritten Signature Verification
+# =============================================================================
+
+# 1. Dataset & Image Corpora (>26,000 files)
+data/
+Dataset_Signature_Final/
+sample_Signature/
+signatures/
+CEDAR/
+BHSig260-*/
+*.tsv
+*.csv
+
+# Ignore general raster images in root and data folders
+*.tif
+*.tiff
+*.jpg
+*.jpeg
+
+# 2. Large Pretrained Weights & Checkpoints (>100 MB GitHub limit)
+*.h5
+*.hdf5
+*.keras
+*.tar.gz
+*.zip
+model_weights33.h5
+
+# EXPLICITLY ALLOW the lightweight optimized model checkpoint (< 5 MB)
+!best_siamese_model.pth
+
+# EXPLICITLY ALLOW evaluation plots
+!evaluation_output/*.png
+
+# 3. Python Caches & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ipynb_checkpoints/
+
+# 4. Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# 5. IDE & OS Artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 6. Frontend Temporary Uploads
+frontend/temp_uploads/*
+!frontend/temp_uploads/.gitkeep
+frontend/.streamlit/

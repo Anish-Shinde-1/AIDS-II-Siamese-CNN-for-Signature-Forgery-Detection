@@ -1,0 +1,33 @@
+{
+  "test_writers": [
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55
+  ],
+  "total_test_pairs": 1200,
+  "genuine_pairs": 600,
+  "forged_pairs": 600,
+  "optimal_threshold": 0.5331516569336733,
+  "optimal_accuracy": 0.8983333333333333,
+  "optimal_precision": 0.8394886363636364,
+  "optimal_recall": 0.985,
+  "optimal_f1": 0.906441717791411,
+  "optimal_far": 0.015,
+  "optimal_frr": 0.18833333333333332,
+  "eer": 0.1433333333333333,
+  "eer_threshold": 0.6494801079255862,
+  "eer_accuracy": 0.8566666666666667,
+  "roc_auc": 0.9349138888888889
+}
