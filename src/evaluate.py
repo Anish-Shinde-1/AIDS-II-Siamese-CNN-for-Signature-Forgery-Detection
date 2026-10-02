@@ -241,7 +241,7 @@ def resolve_checkpoint_path(path_str: str) -> Path:
 def evaluate(
     checkpoint_path: str = "checkpoints/best_siamese_model.pth",
     data_dir: str = "data/signatures",
-    pairs_per_writer: int = 120,
+    pairs_per_writer: int = 40,
     output_dir: str = "evaluation_output",
     device_name: str = "cpu",
 ):
@@ -348,7 +348,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate Siamese Signature Verification Model")
     parser.add_argument("--checkpoint", type=str, default="checkpoints/best_siamese_model.pth")
     parser.add_argument("--data_dir", type=str, default="data/signatures")
-    parser.add_argument("--pairs_per_writer", type=int, default=120)
+    parser.add_argument("--pairs_per_writer", type=int, default=40)
     parser.add_argument("--output_dir", type=str, default="evaluation_output")
     parser.add_argument("--device", type=str, default="cpu")
 
