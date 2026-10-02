@@ -25,9 +25,14 @@ BHSig260-*/
 *.tar.gz
 *.zip
 model_weights33.h5
+checkpoints/*.h5
+checkpoints/*.hdf5
+checkpoints/*.keras
+checkpoints/model_weights33.h5
 
 # EXPLICITLY ALLOW the lightweight optimized model checkpoint (< 5 MB)
 !best_siamese_model.pth
+!checkpoints/best_siamese_model.pth
 
 # EXPLICITLY ALLOW evaluation plots
 !evaluation_output/*.png

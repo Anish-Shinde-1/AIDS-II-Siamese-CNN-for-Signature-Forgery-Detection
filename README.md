@@ -57,43 +57,117 @@ The model was trained strictly on **Writers 1–35** (Validation: 36–40) and e
 
 ## 📂 Repository Structure
 
+The codebase is organized into modular directories:
+
 ```
-├── best_siamese_model.pth    # Optimized PyTorch checkpoint (4.85 MB)
-├── dataset.py                # Writer-independent CEDAR parser & balanced pair generator
-├── model.py                  # Siamese CNN architecture with Global Average Pooling
-├── train.py                  # Contrastive loss training pipeline
-├── evaluate.py               # Biometric evaluation module (FAR, FRR, EER, ROC)
-├── verify.py                 # CLI inference verification tool
-├── training_history.json     # Loss and accuracy logs across epochs
-├── evaluation_output/        # Generated ROC and distance distribution plots
-├── frontend/                 # Interactive Streamlit dashboard
-│   ├── app.py                # Multi-tab demonstration dashboard
-│   └── requirements.txt      # UI dependencies
-├── AIDS II Project Analysis.md # Detailed laboratory investigation report
-└── README.md                 # Project documentation
+AIDS-II-Siamese-CNN-for-Signature-Forgery-Detection/
+│
+├── checkpoints/                  # Trained model checkpoints & training history logs
+│   ├── best_siamese_model.pth    # Optimized PyTorch Siamese model checkpoint (~4.85 MB)
+│   ├── model_weights33.h5        # Baseline legacy Keras weights (~455.88 MB, ignored by git)
+│   └── training_history.json     # Training and validation loss/acc logs across epochs
+│
+├── src/                          # Core Python package source code
+│   ├── __init__.py               # Package initializer & exports
+│   ├── model.py                  # Siamese Network architecture with Global Average Pooling
+│   ├── dataset.py                # Pairwise dataset generator & writer-independent dataloaders
+│   ├── train.py                  # Contrastive loss training pipeline with LR scheduler
+│   ├── evaluate.py               # Biometric evaluation module (FAR, FRR, EER, ROC curves)
+│   └── verify.py                 # CLI inference verification engine
+│
+├── notebooks/                    # Interactive Jupyter notebooks for experimentation
+│   └── signature-verification-using-cnn-snn-csnn.ipynb
+│
+├── docs/                         # Detailed architectural research & project analysis
+│   └── AIDS II Project Analysis.md
+│
+├── evaluation_output/            # Exported evaluation metrics & high-res plots
+│   ├── distance_distribution.png # Genuine vs forged distance histogram
+│   ├── roc_curve.png             # Receiver Operating Characteristic curve
+│   └── evaluation_results.json   # Exported test metrics on unseen writers
+│
+├── frontend/                     # Streamlit demonstration web application
+│   ├── app.py                    # Multi-tab interactive UI (Overview, Benchmarks, Live Demo)
+│   ├── requirements.txt          # Frontend dependencies
+│   └── temp_uploads/             # Scratch directory for user uploaded signatures
+│
+├── data/                         # Root dataset directory (extract all dataset archives here)
+│   ├── signatures/               # CEDAR benchmark dataset (full_org/, full_forg/)
+│   ├── BHSig260-Bengali/         # Bengali Indic script signatures (100 writers)
+│   ├── BHSig260-Hindi/           # Hindi Devanagari script signatures (160 writers)
+│   ├── CEDAR/                    # Full CEDAR directory structure
+│   ├── Dataset_Signature_Final/  # In-the-wild signature corpus
+│   ├── sample_Signature/         # Sample verification genuine/forged pairs
+│   └── assignments_07-02-2022.tsv# Crowdsourced verification annotations
+│
+├── verify.py                     # Root CLI entrypoint (convenience wrapper forwarding to src/verify.py)
+├── train.py                      # Root training entrypoint (forwarding to src/train.py)
+├── evaluate.py                   # Root evaluation entrypoint (forwarding to src/evaluate.py)
+├── dataset.py                    # Root dataset module forwarder
+├── model.py                      # Root model module forwarder
+├── .gitignore                    # Git ignore configuration
+└── README.md                     # Comprehensive project documentation
 ```
 
 ---
 
-## 💾 Dataset Setup Instructions
+## 💾 Dataset Sources & Setup Instructions
 
-This project benchmarks on the **CEDAR Signature Dataset** (Center of Excellence for Document Analysis and Recognition, University at Buffalo):
-* **55 Writers**, 24 genuine signatures and 24 skilled forgeries per writer (2,640 images total).
+### 🔗 Primary Dataset & Reference Sources
+This project utilizes offline signature verification benchmarks and reference resources. Download the dataset archives from the following links:
 
-### How to Download & Set Up the Dataset:
-1. Download the CEDAR dataset from [Kaggle](https://www.kaggle.com/datasets/robinreni/signature-verification-dataset) or the [University at Buffalo CEDAR Repository](https://cedar.buffalo.edu/).
-2. Extract the dataset into the `data/` folder following this structure:
+1. **[CEDAR Signature Dataset (by Shreelakshmi GP)](https://www.kaggle.com/datasets/shreelakshmigp/cedardataset/code?datasetId=1512017&sortBy=voteCount)**
+   - **Description**: Center of Excellence for Document Analysis and Recognition (CEDAR) offline signature benchmark.
+   - **Contents**: 55 writers, each with 24 genuine signatures (`full_org/`) and 24 skilled forgeries (`full_forg/`) (2,640 images total).
+   - **Extracted Structure**: Extracts into `data/signatures/` with `full_org` and `full_forg`.
+
+2. **[Handwritten Signature Datasets (by Ishani Kathuria)](https://www.kaggle.com/datasets/ishanikathuria/handwritten-signature-datasets)**
+   - **Description**: Multilingual signature benchmark collection across Indic and Latin scripts.
+   - **Contents**: Includes `BHSig260-Bengali` (100 writers, 5,400 signatures), `BHSig260-Hindi` (160 writers, 8,640 signatures), and full `CEDAR` directories.
+   - **Extracted Structure**: Extracts into `data/BHSig260-Bengali/`, `data/BHSig260-Hindi/`, and `data/CEDAR/`.
+
+3. **[Handwritten Signature Verification (by tienen)](https://www.kaggle.com/datasets/tienen/handwritten-signature-verification/code?datasetId=1915180&sortBy=voteCount)**
+   - **Description**: Real-world crowdsourced and in-the-wild signature verification dataset from Yandex Toloka tasks.
+   - **Contents**: Contains `Dataset_Signature_Final/`, `sample_Signature/`, crowdsourced verification annotations (`assignments_07-02-2022.tsv`), and real/forged image pairs.
+   - **Extracted Structure**: Extracts into `data/Dataset_Signature_Final/`, `data/sample_Signature/`, and `data/assignments_07-02-2022.tsv`.
+
+4. **[SROIE Dataset v2 - Scanned Receipts OCR & Info Extraction (by urbikn)](https://www.kaggle.com/datasets/urbikn/sroie-datasetv2/code)**
+   - **Description**: ICDAR 2019 Scanned Receipts dataset for receipt document analysis and text/signature localization in transactional documents.
+
+5. **[Signature Verification using CNN, SNN & CSNN (Kaggle Notebook by tmleyncodes)](https://www.kaggle.com/code/tmleyncodes/signature-verification-using-cnn-snn-csnn/comments)**
+   - **Description**: Baseline notebook exploring binary CNN classification versus Siamese metric learning architectures.
+
+---
+
+### 📥 Step-by-Step Data Setup Guide
+
+To set up the datasets for training and verification:
+
+1. **Create the `data/` directory in the project root**:
+   ```bash
+   mkdir data
+   ```
+
+2. **Download and Extract Datasets into `data/`**:
+   Download each dataset zip file from the Kaggle links above and **extract each zip directly into the `data/` folder**. 
+
+3. **Expected Directory Layout in `data/`**:
+   After extracting the archives, your `data/` directory should have the following structure:
    ```
    data/
-   └── signatures/
-       ├── full_org/
-       │   ├── original_1_1.png
-       │   └── ... (original_55_24.png)
-       └── full_forg/
-           ├── forgeries_1_1.png
-           └── ... (forgeries_55_24.png)
+   ├── signatures/                       # [Required for primary pipeline]
+   │   ├── full_org/                     # 1,320 genuine signatures (original_1_1.png ... original_55_24.png)
+   │   └── full_forg/                    # 1,320 skilled forgeries (forgeries_1_1.png ... forgeries_55_24.png)
+   ├── BHSig260-Bengali/                 # Bengali Indic script signatures (100 writers)
+   ├── BHSig260-Hindi/                   # Hindi Devanagari script signatures (160 writers)
+   ├── CEDAR/                            # CEDAR full per-writer folder tree
+   ├── Dataset_Signature_Final/          # In-the-wild signature corpus
+   ├── sample_Signature/                 # Sample verification genuine/forged pairs
+   └── assignments_07-02-2022.tsv        # Crowdsourced verification annotations
    ```
-*(Note: Datasets are excluded from git via `.gitignore` to comply with repository size guidelines).*
+
+> [!NOTE]
+> The primary Siamese verification pipeline and Streamlit dashboard operate on `data/signatures/` (CEDAR dataset with 55 writers). All dataset folders are automatically ignored by Git via `.gitignore` to comply with repository size guidelines.
 
 ---
 
@@ -107,24 +181,26 @@ cd AIDS-II-Siamese-CNN-for-Signature-Forgery-Detection
 pip install torch torchvision matplotlib scikit-learn pillow streamlit
 ```
 
-### 2. Live Verification via CLI (`verify.py`)
+### 2. Live Verification via CLI (`verify.py` or `src/verify.py`)
 Run inference directly between any reference signature and query signature:
 
 ```bash
 # Example 1: Genuine Pair Test
-python verify.py --img1 path/to/original_A.png --img2 path/to/original_B.png
+python src/verify.py --img1 data/signatures/full_org/original_45_1.png --img2 data/signatures/full_org/original_45_2.png
 
 # Example 2: Forgery Detection Test
-python verify.py --img1 path/to/original_A.png --img2 path/to/forged_A.png
+python src/verify.py --img1 data/signatures/full_org/original_45_1.png --img2 data/signatures/full_forg/forgeries_45_1.png
 ```
+
+*(Note: Running `python verify.py ...` from the project root also works via backward-compatible entrypoints).*
 
 **CLI Output Format:**
 ```
 ==================================================
       OFFLINE SIGNATURE VERIFICATION RESULT       
 ==================================================
- Reference Image:  path/to/original_A.png
- Query Image:      path/to/forged_A.png
+ Reference Image:  data/signatures/full_org/original_45_1.png
+ Query Image:      data/signatures/full_forg/forgeries_45_1.png
  Euclidean Dist:   1.3710
  Active Threshold: Auto (optimal EER/Acc)
  Similarity Score: 31.45%
@@ -147,13 +223,14 @@ Open your browser at `http://localhost:8501`. The dashboard includes:
 ### 4. Retraining the Siamese Network (Optional)
 To retrain the model from scratch on Writers 1–35:
 ```bash
-python train.py --epochs 10 --batch_size 32 --pairs_per_writer 30 --lr 0.001
+python src/train.py --epochs 10 --batch_size 32 --pairs_per_writer 30 --lr 0.001
 ```
+*(Checkpoints are saved automatically to `checkpoints/best_siamese_model.pth` and logs to `checkpoints/training_history.json`).*
 
 ### 5. Running Full Biometric Evaluation
 To compute FAR, FRR, EER, and regenerate the ROC curves on unseen test writers:
 ```bash
-python evaluate.py --checkpoint best_siamese_model.pth --pairs_per_writer 40
+python src/evaluate.py --checkpoint checkpoints/best_siamese_model.pth --pairs_per_writer 120
 ```
 
 ---

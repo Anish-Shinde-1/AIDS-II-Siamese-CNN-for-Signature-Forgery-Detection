@@ -476,8 +476,15 @@ with tab3:
         else:
             with st.spinner("Analyzing stroke geometry and computing embedding distance..."):
                 try:
-                    # Run ../verify.py using subprocess.run, with working directory set to ROOT_DIR
-                    verify_script = ROOT_DIR / "verify.py"
+                    # Run verification engine (check src/verify.py then fallback to verify.py)
+                    verify_script = ROOT_DIR / "src" / "verify.py"
+                    if not verify_script.exists():
+                        verify_script = ROOT_DIR / "verify.py"
+
+                    checkpoint_file = ROOT_DIR / "checkpoints" / "best_siamese_model.pth"
+                    if not checkpoint_file.exists():
+                        checkpoint_file = ROOT_DIR / "best_siamese_model.pth"
+
                     cmd = [
                         sys.executable,
                         str(verify_script),
@@ -485,6 +492,8 @@ with tab3:
                         str(anchor_file_path.resolve()),
                         "--img2",
                         str(query_file_path.resolve()),
+                        "--checkpoint",
+                        str(checkpoint_file.resolve()),
                         "--threshold",
                         str(custom_threshold),
                     ]
